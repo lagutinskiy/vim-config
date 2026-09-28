@@ -70,9 +70,19 @@ link .vim/coc-settings.json
 # Plugins
 # ----------------------------------------------------------------------------
 
-# .vimrc bootstraps vim-plug itself; install the plugins headlessly. Errors
-# from plugins that aren't installed yet (e.g. the colorscheme) are expected.
-vim -es -i NONE -c 'PlugInstall --sync' -c 'qa' || true
+curl -fsSLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+# -es skips .vimrc unless it's passed with -u; -N because the vimrc needs
+# nocompatible. On the first run the colorscheme isn't installed yet while
+# the vimrc loads, so vim exits non-zero even though the install succeeds.
+vim -Nu "$HOME/.vimrc" -es -i NONE -c 'PlugInstall --sync' -c 'qa' || true
+
+# markdown-preview's own install hook runs async and is killed when headless
+# vim quits, and it has no prebuilt binary for every architecture; its node
+# dependencies work everywhere
+(cd "$HOME/.vim/plugged/markdown-preview.nvim/app" \
+  && npm install --no-audit --no-fund --loglevel=error)
 
 echo
 echo "Done. Remaining steps:"
