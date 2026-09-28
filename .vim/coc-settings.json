@@ -1,0 +1,24 @@
+{
+  "coc.preferences.formatOnSaveFiletypes": [
+    "rust"
+  ],
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.allTargets": true,
+  "rust-analyzer.cargo.allFeatures": false,
+  "rust-analyzer.inlayHints.enable": false,
+  "languageserver": {
+    "marksman": {
+      "command": "marksman",
+      "args": [
+        "server"
+      ],
+      "filetypes": [
+        "markdown"
+      ],
+      "rootPatterns": [
+        ".marksman.toml",
+        ".git"
+      ]
+    }
+  }
+}

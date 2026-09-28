@@ -22,7 +22,25 @@ Plug 'vim-airline/vim-airline-themes'
 " Code intelligence & completion
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Linting
+" CoC language extensions
+let g:coc_global_extensions = [
+\ 'coc-rust-analyzer',
+\ 'coc-go',
+\ 'coc-pyright',
+\ 'coc-tsserver',
+\ 'coc-json',
+\ 'coc-yaml',
+\ 'coc-docker',
+\ 'coc-toml',
+\ 'coc-markdownlint',
+\ ]
+
+" Polyglot sets docker-compose files to 'yaml.docker-compose'; treat them as
+" YAML in CoC so coc-yaml attaches and applies the compose schema
+let g:coc_filetype_map = {'yaml.docker-compose': 'yaml'}
+
+" Linting (let CoC handle LSP; must be set before ALE loads)
+let g:ale_disable_lsp = 1
 Plug 'dense-analysis/ale'
 
 " Git integration
@@ -36,6 +54,9 @@ Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'jiangmiao/auto-pairs'
+
+" Markdown preview in the browser
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'] }
 
 " Color scheme
 Plug 'joshdick/onedark.vim'
@@ -126,6 +147,16 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" Refactoring, code actions, and diagnostics
+nmap <silent> <leader>rn <Plug>(coc-rename)
+nmap <silent> <leader>a <Plug>(coc-codeaction-cursor)
+xmap <silent> <leader>a <Plug>(coc-codeaction-selected)
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
+
+" Format the current buffer
+nnoremap <silent> <leader>cf :call CocActionAsync('format')<CR>
+
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
@@ -137,12 +168,33 @@ function! ShowDocumentation()
   endif
 endfunction
 
+" Rust tools
+nnoremap <silent> <leader>rr :CocCommand rust-analyzer.run<CR>
+nnoremap <silent> <leader>rt :CocCommand rust-analyzer.testCurrent<CR>
+nnoremap <silent> <leader>re :CocCommand rust-analyzer.expandMacro<CR>
+nnoremap <silent> <leader>rs :CocCommand rust-analyzer.analyzerStatus<CR>
+
+" Markdown preview
+nnoremap <silent> <leader>mp :MarkdownPreviewToggle<CR>
+
+augroup make_settings
+  autocmd!
+  " Makefile recipes must be indented with real tabs
+  autocmd FileType make setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=0
+augroup END
+
+augroup rust_settings
+  autocmd!
+  autocmd FileType rust setlocal tabstop=4 shiftwidth=4 softtabstop=4
+augroup END
+
 " ============================================================================
 " ALE SETTINGS
 " ============================================================================
 let g:ale_linters = {
 \   'python': ['flake8', 'pylint'],
 \   'sql': ['sqlfluff'],
+\   'make': ['checkmake'],
 \}
 let g:ale_fixers = {
 \   'python': ['black', 'isort'],
