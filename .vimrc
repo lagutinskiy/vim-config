@@ -216,3 +216,14 @@ let NERDTreeIgnore=['\.pyc$', '__pycache__', '.git$']
 let g:airline_theme='onedark'
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
+" Avoid duplicated Powerline wedges in Airline's tabline.
+let g:airline#extensions#tabline#left_sep = ''
+let g:airline#extensions#tabline#left_alt_sep = ''
+let g:airline#extensions#tabline#right_sep = ''
+let g:airline#extensions#tabline#right_alt_sep = ''
+" Use readable line/column labels in the right statusline section.
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols['linenr'] = 'L:'
+let g:airline_symbols['colnr'] = 'C:'
